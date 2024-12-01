@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
     ass = Assignment2()
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
-    ass.experiment_k_range_erm(1500, 1, 10, 1)
-    ass.experiment_k_range_srm(1500, 1, 10, 1)
-    ass.cross_validation(1500)
+    # ass.experiment_k_range_erm(1500, 1, 10, 1)
+    # ass.experiment_k_range_srm(1500, 1, 10, 1)
+    # ass.cross_validation(1500)
 
