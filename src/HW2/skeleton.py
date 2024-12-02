@@ -127,7 +127,9 @@ class Assignment2(object):
             inters, erm = intervals.find_best_interval(x_points, y_labels, k)
             empirical_error = erm / m
             true_error = self.calculate_true_error(inters)
-            penalty = np.sqrt((2*k + np.log(2 / (0.1 / np.power(k, 2)))) / m)
+            delta_k = 0.1 / np.power(k, 2)
+            vcdim = 2 * k
+            penalty = 2 * np.sqrt((vcdim + np.log(2 / delta_k)) / m)
             SRM = penalty + empirical_error
             if SRM < optimal_emp:
                 optimal_k = k
@@ -208,8 +210,8 @@ class Assignment2(object):
     def calculate_empirical_error(self, inters, samples):
         sample_size = len(samples)
         error_count = 0
-        expected = 0
         for x, y in samples:
+            expected = 0
             for interval in inters:
                 left = interval[0]
                 right = interval[1]
