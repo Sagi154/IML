@@ -1,11 +1,10 @@
 #################################
-# Your name:
+# Your name: Sagi Eisenberg
 #################################
 
 import numpy as np
 import matplotlib.pyplot as plt
 import intervals
-from pprint import pprint
 
 
 class Assignment2(object):
@@ -102,7 +101,6 @@ class Assignment2(object):
         plt.plot(steps_count, errors_arr[:, 1], marker='s', linestyle='--', color='g', label='True Error')
         plt.legend()
         plt.show()
-        print(f"Optimal k is: {optimal_k}")
         return optimal_k
 
     def experiment_k_range_srm(self, m, k_first, k_last, step):
@@ -149,7 +147,6 @@ class Assignment2(object):
         plt.plot(steps_count, errors_arr[:, 3], marker='o', linestyle='--', color='y', label='Penalty + Empirical Error')
         plt.legend()
         plt.show()
-        print(f"optimal k for d:{optimal_k}")
         return optimal_k
 
     def cross_validation(self, m):
@@ -177,9 +174,6 @@ class Assignment2(object):
             emp_error_holdout_samples[i] = self.calculate_empirical_error(best_inter, holdout_samples)
 
         optimal_k = np.argmin(emp_error_holdout_samples) + 1
-        print(f"optimal k for e:{optimal_k}")
-        print("Best interval: ")
-        pprint([(float(x), float(y)) for (x, y) in best_inters[optimal_k - 1]])
         return optimal_k
 
 
@@ -229,8 +223,8 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     ass = Assignment2()
-    # ass.experiment_m_range_erm(10, 100, 5, 3, 100)
-    # ass.experiment_k_range_erm(1500, 1, 10, 1)
-    # ass.experiment_k_range_srm(1500, 1, 10, 1)
+    ass.experiment_m_range_erm(10, 100, 5, 3, 100)
+    ass.experiment_k_range_erm(1500, 1, 10, 1)
+    ass.experiment_k_range_srm(1500, 1, 10, 1)
     ass.cross_validation(1500)
 
