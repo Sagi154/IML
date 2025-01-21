@@ -156,11 +156,14 @@ def train_classifier(eta, c):
 
 
 if __name__ == '__main__':
-    best_eta = find_optimal_eta()
-    print(f"Best eta: {best_eta}")
-    best_c = find_optimal_c(best_eta)
-    print(f"Best C: {best_c}")
-    best_accuracy = train_classifier(best_eta, best_c)
-    print(f"Best Accuracy: {best_accuracy}")
+    import matplotlib
+    print(matplotlib.get_backend())
+    print(matplotlib.__version__)
+    # best_eta = find_optimal_eta()
+    # print(f"Best eta: {best_eta}")
+    # best_c = find_optimal_c(best_eta)
+    # print(f"Best C: {best_c}")
+    # best_accuracy = train_classifier(best_eta, best_c)
+    # print(f"Best Accuracy: {best_accuracy}")
 
 #################################
