@@ -31,12 +31,6 @@ class Network(object):
         r_dev[x > 0] = 1
         return r_dev
 
-    def softmax(self, logits):
-        logits_exp = np.exp(logits)
-        softmax = logits_exp / np.sum(logits_exp, axis=0)
-        return softmax
-
-
     def cross_entropy_loss(self, logits, y_true):
         m = y_true.shape[0]
         # Compute log-sum-exp across each column for normalization
@@ -51,11 +45,11 @@ class Network(object):
                     "y_true": numpy array of shape (batch_size,) containing the true labels of the batch
             Returns: a numpy array of shape (10,batch_size) where each column is the gradient of the loss with respect to y_pred (the output of the network before the softmax layer) for the given example.
         """
-        softmax_v = self.softmax(logits)
+        softmax_v = softmax(logits, axis=0)
 
         one_hot_y = np.eye(10)[y_true].T
 
-        return softmax_v - one_hot_y
+        return (softmax_v - one_hot_y)
 
         
 
@@ -66,23 +60,21 @@ class Network(object):
             Returns: "ZL" - numpy array of shape (10, batch_size), the output of the network on the input X (before the softmax layer)
                     "forward_outputs" - A list of length self.num_layers containing the forward computation (parameters & output of each layer).
         """
-        ZL = X
         forward_outputs = []
+        layers = self.num_layers
 
-        for l in range(0, self.num_layers - 1):
+        prev_Z = X
+        for l in range(1, layers + 1):
             W = self.parameters["W" + str(l)]
             b = self.parameters["b" + str(l)]
-            VL = np.dot(W, ZL) + b
-            prev = ZL
-            ZL = self.relu(VL)
-            forward_outputs.append((W, b, prev, VL, ZL))
-
-        # Last Layer, no activation
-        W = self.parameters['W' + str(l)]
-        b = self.parameters['b' + str(l)]
-        VL = np.dot(W, ZL) + b
-        forward_outputs.append((W, b, ZL, VL, VL))
-
+            VL = np.dot(W, prev_Z) + b
+            if l < layers:
+                ZL = self.relu(VL)
+            else:
+                ZL = VL
+            forward_outputs.append([W, b, prev_Z, VL, ZL])
+            prev_Z = ZL
+            
         return ZL, forward_outputs
 
     def backpropagation(self, ZL, Y, forward_outputs):
@@ -96,9 +88,20 @@ class Network(object):
         
         """
         grads = {}
-        
-        #TODO: Implement the backward function
-        raise NotImplementedError
+        batch_size = Y.shape[0]
+        delta_L = self.cross_entropy_derivative(ZL, Y)
+        layers = self.num_layers
+
+        grads["dW" + str(layers)] = np.dot(delta_L, forward_outputs[layers - 1][2].T) / batch_size
+        grads["db" + str(layers)] = np.mean(delta_L, axis=1, keepdims=True)
+
+        for l in range(layers - 1, 0, -1):
+            delta = np.dot(self.parameters["W" + str(l + 1)].T, delta_L)
+            x = delta * self.relu_derivative(forward_outputs[l - 1][3])
+            grads["dW" + str(l)] = np.dot(x, forward_outputs[l - 1][2].T) / batch_size
+            grads["db" + str(l)] = np.mean(x, axis=1, keepdims=True)
+            delta_L = x
+
         return grads
 
 
